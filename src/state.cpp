@@ -1,4 +1,5 @@
 #include <cassert>
+#include <ranges>
 
 #include "state.hpp"
 #include "matrix.hpp"
@@ -19,23 +20,25 @@ namespace qsim {
     template <typename T>
     void state<T>::apply(const unitary<T>& op, const std::vector<int>& qubits)
     {
+        auto rqubits=std::ranges::reverse_view(qubits);
+
         assert(qubits.size() == op.size());
 
         auto mask = 0ULL;
-        for (auto q : qubits)
+        for (auto q : rqubits)
             mask |= 1 << q;
 
         assert(std::popcount(mask) == qubits.size());
         assert(mask < (1 << nqubits));
 
         matrix<complex> v(1 << op.size(), 1);
-        for (auto i = 0ULL; i < 1 << nqubits; mask & (++i) ? i += mask & i : 0) {
+        for (auto i = 0ULL; i < 1 << nqubits; ) {
             
-            auto pack = [qubits](auto f) {
-                for (auto j = 0ULL; j < 1 << qubits.size(); j++) {
+            auto pack = [rqubits](auto f) {
+                for (auto j = 0ULL; j < 1 << rqubits.size(); j++) {
                     auto p = 0ULL;
-                    for (int k = 0; k < qubits.size(); k++)
-                        p |= (j & (1 << k)) ? (1ULL << qubits[k]) : 0;
+                    for (int k = 0; k < rqubits.size(); k++)
+                        p |= (j & (1 << k)) ? (1ULL << rqubits[k]) : 0;
                     f(j, p);
                 }
             };
@@ -45,6 +48,9 @@ namespace qsim {
             v=op.transform(v);
 
             pack([&](auto j, auto p) { amplitudes[i + p]=v(j,0); });
+
+            i++;
+            while(mask & i) i += mask & i;
         }
     }
 

@@ -10,7 +10,7 @@ build:
 	mkdir -p build
 	mkdir -p build/tests
 
-CPPFLAGS = -std=c++23 -Isrc -Isrc/tests
+CPPFLAGS = -std=c++23 -Isrc -Isrc/tests -g
 
 SRCS = $(wildcard src/*.cpp src/*/*.cpp)
 OBJS = $(patsubst src/%.cpp, build/%.o, $(SRCS))

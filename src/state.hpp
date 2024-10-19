@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <complex>
+#include <ostream>
 
 #include "unitary.hpp"
 
@@ -25,10 +26,23 @@ class state {
             return amplitudes[i];
         }
 
+        int size() const {return 1<<nqubits;}
+
     private:
         std::unique_ptr<complex[]> amplitudes;
         int nqubits;
 };
+
+template<typename T>
+std::ostream & operator<<(std::ostream &os, const state<T> &s) {
+    os<<"[";
+    for (int i=0;i<s.size();i++) {
+        os<<s[i];
+        if (i<s.size()-1) os<<",";
+    }
+    os<<"]";
+    return os;
+}
 
 } // namespace qsim
 
