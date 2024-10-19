@@ -4,15 +4,28 @@
 namespace qsim::tests {
 
 struct test_assert_exception : std::exception {
+    test_assert_exception(const char *file, int line, const char *msg) :
+    msg(std::string(file)+":"+std::to_string(line)+": "+msg+" failed!") {}
+
     const char *what() const noexcept override {
-        return "Assertion failed";
+        return msg.c_str();
     }
+
+    private:
+        std::string msg;
 };
 
-static void test_assert_approx(double a, double b) {
-    if (std::abs(a-b)<1e-3) return;
-    throw std::runtime_error("Assertion failed");
+template<typename A,typename B>
+static bool test_assert_approx(A a, B b) {
+    return (std::abs(a-b)<1e-3);
 }
+
+static void test_assert_msg(bool cond, const char *file, int line, const char *msg) {
+    if (cond) return;
+    throw test_assert_exception(file,line,msg);
+}
+
+#define test_assert_approx(a,b) test_assert_msg(test_assert_approx(a,b),__FILE__,__LINE__,"test_assert_approx("#a","#b")")
 
 struct test_def {
     test_def *prev;

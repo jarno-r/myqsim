@@ -13,6 +13,7 @@ namespace qsim {
     {
         nqubits = qubits;
         amplitudes = std::make_unique<complex[]>(1 << nqubits);
+        amplitudes[0] = 1;
     }
 
     template <typename T>
@@ -41,7 +42,7 @@ namespace qsim {
 
             pack([&](auto j, auto p) { v(j, 0) = amplitudes[i + p]; });
 
-            op.transform(v);
+            v=op.transform(v);
 
             pack([&](auto j, auto p) { amplitudes[i + p]=v(j,0); });
         }

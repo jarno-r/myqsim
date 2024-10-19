@@ -20,6 +20,11 @@ class state {
 
         void apply(const unitary<T> &op, const std::vector<int> &qubits);
 
+        complex operator[](int i) const {
+            assert(i>=0 && i<(1<<nqubits));
+            return amplitudes[i];
+        }
+
     private:
         std::unique_ptr<complex[]> amplitudes;
         int nqubits;
