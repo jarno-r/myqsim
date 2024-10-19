@@ -8,8 +8,11 @@ clean:
 
 build:
 	mkdir -p build
+	mkdir -p build/tests
 
-SRCS = $(wildcard src/*.cpp)
+CPPFLAGS = -std=c++23 -Isrc -Isrc/tests
+
+SRCS = $(wildcard src/*.cpp src/*/*.cpp)
 OBJS = $(patsubst src/%.cpp, build/%.o, $(SRCS))
 DEPS = $(patsubst src/%.cpp, build/%.d, $(SRCS))
 
@@ -17,7 +20,7 @@ myqsim: $(OBJS)
 	$(CXX) -o $@ $^
 
 build/%.o: src/%.cpp build/%.d
-	$(CXX) -MMD -c -o $@ $<
+	$(CXX) $(CPPFLAGS) -MMD -c -o $@ $<
 
 build/%.d: ;
 
