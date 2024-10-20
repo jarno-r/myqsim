@@ -26,7 +26,41 @@ class state {
             return amplitudes[i];
         }
 
+        complex & operator[](int i) {
+            assert(i>=0 && i<(1<<nqubits));
+            return amplitudes[i];
+        }
+
         int size() const {return 1<<nqubits;}
+
+        /**
+         * @brief Sample qubits.
+         * Perform a measurement of the given qubits, but do not collapse the state.
+         * 
+         * @param qubits List of qubits to sample.
+         * @return uint64_t Values of qubits.
+         */
+        uint64_t sample(const std::vector<int> &qubits);
+
+        /**
+         * @brief Collapse states.
+         * Collapses the state such that the given qubits have the given values.
+         * 
+         * @param qubits List of qubits to collapse.
+         * @param value Qubit values.
+         */
+        void collapse(const std::vector<int> &qubits, uint64_t value);
+
+        /// @brief Measure qubits.
+        /// @param qubits List of qubits to measure.
+        /// @return Qubit values.
+        uint64_t measure(const std::vector<int> &qubits) {
+            auto r=sample(qubits);
+            collapse(qubits,r);
+            return r;
+        }
+
+        void normalize();
 
     private:
         std::unique_ptr<complex[]> amplitudes;

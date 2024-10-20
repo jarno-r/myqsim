@@ -32,30 +32,26 @@ void superdense() {
     int msg=std::uniform_int_distribution(0,3)(g);
 
     cout<<"Alice's message: "<<msg<<"\n";
-    s.apply(h,{0});
-    s.apply(cx,{1,0});
-
-    cout << s << "\n";
+    s.apply(h,{1});
+    s.apply(cx,{0,1});
 
     switch(msg) {
         case 0:
             break;
         case 1:
-            s.apply(x,{0});
+            s.apply(x,{1});
             break;
         case 2:
-            s.apply(z,{0});
+            s.apply(z,{1});
             break;
         case 3:
-            s.apply(x,{0});
-            s.apply(z,{0});
+            s.apply(x,{1});
+            s.apply(z,{1});
             break;
     }
 
-    s.apply(cx,{1,0});
-    s.apply(h,{0});
+    s.apply(cx,{0,1});
+    s.apply(h,{1});
 
-    cout << s << "\n";
-
-
+    cout << "Bob received " << s.measure({0,1}) << "\n";
 }
